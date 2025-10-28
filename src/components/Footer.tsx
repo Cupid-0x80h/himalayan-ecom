@@ -1,6 +1,6 @@
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
 
-export export const Footer = () => {
+export const Footer = () => {
   return (
     <footer className="bg-card border-t border-border mt-20">
       <div className="container px-4 py-12">
