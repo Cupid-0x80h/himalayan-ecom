@@ -5,7 +5,8 @@ type Language = 'en' | 'ne';
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  toggleLanguage: () => void;
+  t: (key: string) => any;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -13,7 +14,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 const translations = {
   en: {
     // Header
-    'search.placeholder': 'Search products...',
+    searchPlaceholder: 'Search products...',
     'nav.login': 'Login',
     'nav.account': 'Account',
     'nav.cart': 'Cart',
@@ -21,10 +22,40 @@ const translations = {
     'nav.logout': 'Logout',
     
     // Categories
-    'category.electronics': 'Electronics',
-    'category.clothing': 'Clothing',
-    'category.home-kitchen': 'Home & Kitchen',
-    'category.books': 'Books',
+    categories: ['Electronics', 'Fashion & Apparel', 'Home & Kitchen', 'Sports', 'Books & Stationery', 'Health & Beauty'],
+    
+    // Home Page
+    heroBadge: "Nepal's #1 Online Shopping Platform",
+    heroTitle: 'Quality Products at Your Doorstep',
+    heroSubtitle: 'Thousands of products, secure payment options, and fast delivery. Trusted across Nepal.',
+    shopNow: 'Shop Now',
+    viewDeals: 'View Deals',
+    
+    // Features
+    freeDelivery: 'Free Delivery',
+    freeDeliveryDesc: 'On orders NPR 2000+',
+    securePayment: 'Secure Payment',
+    securePaymentDesc: '100% Secure',
+    easyPayment: 'Easy Payment',
+    easyPaymentDesc: 'Multiple Options',
+    support247: '24/7 Support',
+    support247Desc: 'Always Available',
+    
+    // Categories Section
+    categoriesTitle: 'Categories',
+    categoriesSubtitle: 'Choose your favorite category',
+    products: 'products',
+    
+    // Featured Products
+    featuredProducts: 'Featured Products',
+    featuredProductsDesc: 'Our most popular products',
+    viewAll: 'View All',
+    
+    // Newsletter
+    getSpecialOffers: 'Get Special Offers',
+    newsletterDesc: 'Subscribe to our newsletter and get exclusive discounts and information about new products',
+    emailPlaceholder: 'Your email',
+    subscribe: 'Subscribe',
     
     // Home
     'home.hero.title': 'Welcome to Nepal E-Commerce',
@@ -134,7 +165,7 @@ const translations = {
   },
   ne: {
     // Header
-    'search.placeholder': 'उत्पादनहरू खोज्नुहोस्...',
+    searchPlaceholder: 'उत्पादनहरू खोज्नुहोस्...',
     'nav.login': 'लगइन',
     'nav.account': 'खाता',
     'nav.cart': 'कार्ट',
@@ -142,10 +173,40 @@ const translations = {
     'nav.logout': 'लगआउट',
     
     // Categories
-    'category.electronics': 'इलेक्ट्रोनिक्स',
-    'category.clothing': 'कपडा',
-    'category.home-kitchen': 'घर र भान्सा',
-    'category.books': 'पुस्तकहरू',
+    categories: ['इलेक्ट्रोनिक्स', 'लुगा र फेसन', 'घर र भान्सा', 'खेलकुद', 'किताब र स्टेशनरी', 'स्वास्थ्य र सौन्दर्य'],
+    
+    // Home Page
+    heroBadge: 'नेपालको #१ अनलाइन शपिङ प्लेटफर्म',
+    heroTitle: 'गुणस्तरीय उत्पादनहरू तपाईंको ढोकामा',
+    heroSubtitle: 'हजारौं उत्पादनहरू, सुरक्षित भुक्तानी विकल्पहरू र छिटो डेलिभरी। नेपालभरि विश्वासित।',
+    shopNow: 'अहिले किनमेल गर्नुहोस्',
+    viewDeals: 'अफरहरू हेर्नुहोस्',
+    
+    // Features
+    freeDelivery: 'नि:शुल्क डेलिभरी',
+    freeDeliveryDesc: 'रू 2000+ अर्डरमा',
+    securePayment: 'सुरक्षित भुक्तानी',
+    securePaymentDesc: '100% सुरक्षित',
+    easyPayment: 'सजिलो भुक्तानी',
+    easyPaymentDesc: 'धेरै विकल्पहरू',
+    support247: '२४/७ सहयोग',
+    support247Desc: 'सधैं उपलब्ध',
+    
+    // Categories Section
+    categoriesTitle: 'श्रेणीहरू',
+    categoriesSubtitle: 'तपाईंको मनपर्ने श्रेणी छान्नुहोस्',
+    products: 'उत्पादनहरू',
+    
+    // Featured Products
+    featuredProducts: 'विशेष उत्पादनहरू',
+    featuredProductsDesc: 'हाम्रा सबैभन्दा लोकप्रिय उत्पादनहरू',
+    viewAll: 'सबै हेर्नुहोस्',
+    
+    // Newsletter
+    getSpecialOffers: 'विशेष अफरहरू पाउनुहोस्',
+    newsletterDesc: 'हाम्रो न्यूजलेटर सब्सक्राइब गर्नुहोस् र विशेष छुट र नयाँ उत्पादनहरूको जानकारी पाउनुहोस्',
+    emailPlaceholder: 'तपाईंको इमेल',
+    subscribe: 'सब्सक्राइब गर्नुहोस्',
     
     // Home
     'home.hero.title': 'नेपाल ई-कमर्समा स्वागत छ',
@@ -265,12 +326,16 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem('language', language);
   }, [language]);
 
-  const t = (key: string): string => {
+  const t = (key: string): any => {
     return translations[language][key as keyof typeof translations['en']] || key;
   };
 
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'ne' : 'en');
+  };
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, toggleLanguage }}>
       {children}
     </LanguageContext.Provider>
   );

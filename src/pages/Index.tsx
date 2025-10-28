@@ -5,8 +5,10 @@ import { ProductCard } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Shield, Truck, CreditCard, Headphones } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
+  const { t } = useLanguage();
   // Sample featured products
   const featuredProducts = [
     {
@@ -69,14 +71,20 @@ const Index = () => {
     },
   ];
 
-  const categories = [
-    { name: "इलेक्ट्रोनिक्स", icon: "📱", count: 250 },
-    { name: "लुगा र फेसन", icon: "👕", count: 180 },
-    { name: "घर र भान्सा", icon: "🏠", count: 320 },
-    { name: "खेलकुद", icon: "⚽", count: 95 },
-    { name: "किताब र स्टेशनरी", icon: "📚", count: 150 },
-    { name: "स्वास्थ्य र सौन्दर्य", icon: "💄", count: 200 },
+  const categoryData = [
+    { icon: "📱", count: 250 },
+    { icon: "👕", count: 180 },
+    { icon: "🏠", count: 320 },
+    { icon: "⚽", count: 95 },
+    { icon: "📚", count: 150 },
+    { icon: "💄", count: 200 },
   ];
+  
+  const categories = t('categories').map((name: string, index: number) => ({
+    name,
+    icon: categoryData[index]?.icon || "📦",
+    count: categoryData[index]?.count || 0,
+  }));
 
   return (
     <div className="relative min-h-screen">
@@ -90,23 +98,21 @@ const Index = () => {
           <div className="container px-4 py-16 md:py-24">
             <div className="max-w-3xl mx-auto text-center animate-fade-in-up">
               <Badge className="mb-4 bg-secondary/10 text-secondary border-secondary/20">
-                नेपालको #१ अनलाइन शपिङ प्लेटफर्म
+                {t('heroBadge')}
               </Badge>
               <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-                गुणस्तरीय उत्पादनहरू
-                <br />
-                तपाईंको ढोकामा
+                {t('heroTitle')}
               </h1>
               <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                हजारौं उत्पादनहरू, सुरक्षित भुक्तानी विकल्पहरू र छिटो डेलिभरी। नेपालभरि विश्वासित।
+                {t('heroSubtitle')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" className="gap-2 text-base">
-                  अहिले किनमेल गर्नुहोस्
+                  {t('shopNow')}
                   <ArrowRight className="h-5 w-5" />
                 </Button>
                 <Button size="lg" variant="outline" className="text-base">
-                  अफरहरू हेर्नुहोस्
+                  {t('viewDeals')}
                 </Button>
               </div>
             </div>
@@ -122,8 +128,8 @@ const Index = () => {
                   <Truck className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm">नि:शुल्क डेलिभरी</h3>
-                  <p className="text-xs text-muted-foreground">रू 2000+ अर्डरमा</p>
+                  <h3 className="font-semibold text-sm">{t('freeDelivery')}</h3>
+                  <p className="text-xs text-muted-foreground">{t('freeDeliveryDesc')}</p>
                 </div>
               </div>
               <div className="flex flex-col items-center text-center gap-2">
@@ -131,8 +137,8 @@ const Index = () => {
                   <Shield className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm">सुरक्षित भुक्तानी</h3>
-                  <p className="text-xs text-muted-foreground">100% सुरक्षित</p>
+                  <h3 className="font-semibold text-sm">{t('securePayment')}</h3>
+                  <p className="text-xs text-muted-foreground">{t('securePaymentDesc')}</p>
                 </div>
               </div>
               <div className="flex flex-col items-center text-center gap-2">
@@ -140,8 +146,8 @@ const Index = () => {
                   <CreditCard className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm">सजिलो भुक्तानी</h3>
-                  <p className="text-xs text-muted-foreground">धेरै विकल्पहरू</p>
+                  <h3 className="font-semibold text-sm">{t('easyPayment')}</h3>
+                  <p className="text-xs text-muted-foreground">{t('easyPaymentDesc')}</p>
                 </div>
               </div>
               <div className="flex flex-col items-center text-center gap-2">
@@ -149,8 +155,8 @@ const Index = () => {
                   <Headphones className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm">२४/७ सहयोग</h3>
-                  <p className="text-xs text-muted-foreground">सधैं उपलब्ध</p>
+                  <h3 className="font-semibold text-sm">{t('support247')}</h3>
+                  <p className="text-xs text-muted-foreground">{t('support247Desc')}</p>
                 </div>
               </div>
             </div>
@@ -161,8 +167,8 @@ const Index = () => {
         <section className="py-16">
           <div className="container px-4">
             <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold mb-2">श्रेणीहरू</h2>
-              <p className="text-muted-foreground">तपाईंको मनपर्ने श्रेणी छान्नुहोस्</p>
+              <h2 className="text-3xl font-bold mb-2">{t('categoriesTitle')}</h2>
+              <p className="text-muted-foreground">{t('categoriesSubtitle')}</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {categories.map((category) => (
@@ -172,7 +178,7 @@ const Index = () => {
                 >
                   <div className="text-4xl mb-3">{category.icon}</div>
                   <h3 className="font-semibold text-sm mb-1">{category.name}</h3>
-                  <p className="text-xs text-muted-foreground">{category.count} उत्पादनहरू</p>
+                  <p className="text-xs text-muted-foreground">{category.count} {t('products')}</p>
                 </button>
               ))}
             </div>
@@ -184,11 +190,11 @@ const Index = () => {
           <div className="container px-4">
             <div className="flex items-center justify-between mb-10">
               <div>
-                <h2 className="text-3xl font-bold mb-2">विशेष उत्पादनहरू</h2>
-                <p className="text-muted-foreground">हाम्रा सबैभन्दा लोकप्रिय उत्पादनहरू</p>
+                <h2 className="text-3xl font-bold mb-2">{t('featuredProducts')}</h2>
+                <p className="text-muted-foreground">{t('featuredProductsDesc')}</p>
               </div>
               <Button variant="outline" className="hidden md:flex gap-2">
-                सबै हेर्नुहोस्
+                {t('viewAll')}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
@@ -201,7 +207,7 @@ const Index = () => {
             </div>
             <div className="text-center mt-8 md:hidden">
               <Button variant="outline" className="gap-2">
-                सबै हेर्नुहोस्
+                {t('viewAll')}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
@@ -214,18 +220,18 @@ const Index = () => {
           <div className="container px-4 relative z-10">
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                विशेष अफरहरू पाउनुहोस्
+                {t('getSpecialOffers')}
               </h2>
               <p className="text-lg text-muted-foreground mb-8">
-                हाम्रो न्यूजलेटर सब्सक्राइब गर्नुहोस् र विशेष छुट र नयाँ उत्पादनहरूको जानकारी पाउनुहोस्
+                {t('newsletterDesc')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
                 <input
                   type="email"
-                  placeholder="तपाईंको इमेल"
+                  placeholder={t('emailPlaceholder')}
                   className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
-                <Button className="whitespace-nowrap">सब्सक्राइब गर्नुहोस्</Button>
+                <Button className="whitespace-nowrap">{t('subscribe')}</Button>
               </div>
             </div>
           </div>

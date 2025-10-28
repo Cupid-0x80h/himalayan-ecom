@@ -1,8 +1,14 @@
-import { ShoppingCart, Search, User, Menu } from "lucide-react";
+import { ShoppingCart, Search, User, Menu, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export const Header = () => {
+  const { language, toggleLanguage, t } = useLanguage();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="container flex h-16 items-center justify-between px-4">
@@ -24,7 +30,7 @@ export const Header = () => {
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="उत्पादनहरू खोज्नुहोस्..."
+              placeholder={t('searchPlaceholder')}
               className="pl-9 pr-4"
             />
           </div>
@@ -35,10 +41,27 @@ export const Header = () => {
           <Button variant="ghost" size="icon" className="md:hidden">
             <Search className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={toggleLanguage}
+            title={language === 'ne' ? 'Switch to English' : 'नेपालीमा बदल्नुहोस्'}
+          >
+            <Globe className="h-5 w-5" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => navigate(user ? '/admin' : '/auth')}
+          >
             <User className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="relative">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="relative"
+            onClick={() => navigate('/cart')}
+          >
             <ShoppingCart className="h-5 w-5" />
             <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-secondary text-[10px] font-bold text-secondary-foreground flex items-center justify-center">
               0
@@ -51,31 +74,13 @@ export const Header = () => {
       <nav className="hidden md:block border-t border-border">
         <div className="container px-4">
           <ul className="flex items-center gap-6 py-3 text-sm">
-            <li>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                इलेक्ट्रोनिक्स
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                लुगा र फेसन
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                घर र भान्सा
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                खेलकुद
-              </a>
-            </li>
-            <li>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                किताब र स्टेशनरी
-              </a>
-            </li>
+            {t('categories').map((category: string, index: number) => (
+              <li key={index}>
+                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+                  {category}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
       </nav>
