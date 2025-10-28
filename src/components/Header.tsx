@@ -74,13 +74,30 @@ export const Header = () => {
       <nav className="hidden md:block border-t border-border">
         <div className="container px-4">
           <ul className="flex items-center gap-6 py-3 text-sm">
-            {t('categories').map((category: string, index: number) => (
-              <li key={index}>
-                <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {category}
-                </a>
-              </li>
-            ))}
+            <li>
+              <button 
+                onClick={() => navigate('/products')}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {language === 'en' ? 'All Products' : 'सबै उत्पादनहरू'}
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => navigate('/about')}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {language === 'en' ? 'About' : 'हाम्रो बारेमा'}
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => navigate('/contact')}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {language === 'en' ? 'Contact' : 'सम्पर्क'}
+              </button>
+            </li>
           </ul>
         </div>
       </nav>

@@ -1,6 +1,55 @@
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { Link } from "react-router-dom";
 
 export const Footer = () => {
+  const { language } = useLanguage();
+  
+  const content = {
+    en: {
+      about: 'Nepal\'s most trusted online shopping platform. Quality products, secure payment, and fast delivery.',
+      quickLinks: 'Quick Links',
+      aboutUs: 'About Us',
+      contact: 'Contact',
+      terms: 'Terms & Conditions',
+      privacy: 'Privacy Policy',
+      customerService: 'Customer Service',
+      myAccount: 'My Account',
+      trackOrder: 'Track Order',
+      returnPolicy: 'Return Policy',
+      helpCenter: 'Help Center',
+      contactInfo: 'Contact Information',
+      address: 'Kathmandu, Nepal',
+      phone: '+977-XXXXXXXXXX',
+      email: 'info@nepalecom.com',
+      rights: 'All rights reserved.',
+      paymentOptions: 'Payment Options:',
+      bankTransfer: 'Bank Transfer'
+    },
+    ne: {
+      about: 'नेपालको सबैभन्दा भरपर्दो अनलाइन शपिङ प्लेटफर्म। गुणस्तरीय उत्पादनहरू, सुरक्षित भुक्तानी र छिटो डेलिभरी।',
+      quickLinks: 'द्रुत लिंकहरू',
+      aboutUs: 'हाम्रो बारेमा',
+      contact: 'सम्पर्क',
+      terms: 'नियम र सर्तहरू',
+      privacy: 'गोपनीयता नीति',
+      customerService: 'ग्राहक सेवा',
+      myAccount: 'मेरो खाता',
+      trackOrder: 'अर्डर ट्र्याक गर्नुहोस्',
+      returnPolicy: 'फिर्ता नीति',
+      helpCenter: 'सहायता केन्द्र',
+      contactInfo: 'सम्पर्क जानकारी',
+      address: 'काठमाडौं, नेपाल',
+      phone: '+977-XXXXXXXXXX',
+      email: 'info@nepalecom.com',
+      rights: 'सर्वाधिकार सुरक्षित।',
+      paymentOptions: 'भुक्तानी विकल्पहरू:',
+      bankTransfer: 'बैंक स्थानान्तरण'
+    }
+  };
+  
+  const t = content[language];
+  
   return (
     <footer className="bg-card border-t border-border mt-20">
       <div className="container px-4 py-12">
@@ -11,7 +60,7 @@ export const Footer = () => {
               NepalEcom
             </h3>
             <p className="text-sm text-muted-foreground mb-4">
-              नेपालको सबैभन्दा भरपर्दो अनलाइन शपिङ प्लेटफर्म। गुणस्तरीय उत्पादनहरू, सुरक्षित भुक्तानी र छिटो डेलिभरी।
+              {t.about}
             </p>
             <div className="flex gap-3">
               <a
@@ -37,26 +86,26 @@ export const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold mb-4">द्रुत लिंकहरू</h4>
+            <h4 className="font-semibold mb-4">{t.quickLinks}</h4>
             <ul className="space-y-2 text-sm">
               <li>
+                <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors">
+                  {t.aboutUs}
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-muted-foreground hover:text-primary transition-colors">
+                  {t.contact}
+                </Link>
+              </li>
+              <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  हाम्रो बारेमा
+                  {t.terms}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  सम्पर्क
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  नियम र सर्तहरू
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  गोपनीयता नीति
+                  {t.privacy}
                 </a>
               </li>
             </ul>
@@ -64,26 +113,26 @@ export const Footer = () => {
 
           {/* Customer Service */}
           <div>
-            <h4 className="font-semibold mb-4">ग्राहक सेवा</h4>
+            <h4 className="font-semibold mb-4">{t.customerService}</h4>
             <ul className="space-y-2 text-sm">
               <li>
+                <Link to="/auth" className="text-muted-foreground hover:text-primary transition-colors">
+                  {t.myAccount}
+                </Link>
+              </li>
+              <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  मेरो खाता
+                  {t.trackOrder}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  अर्डर ट्र्याक गर्नुहोस्
+                  {t.returnPolicy}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  फिर्ता नीति
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  सहायता केन्द्र
+                  {t.helpCenter}
                 </a>
               </li>
             </ul>
@@ -91,32 +140,32 @@ export const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h4 className="font-semibold mb-4">सम्पर्क जानकारी</h4>
+            <h4 className="font-semibold mb-4">{t.contactInfo}</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2 text-muted-foreground">
                 <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>काठमाडौं, नेपाल</span>
+                <span>{t.address}</span>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
                 <Phone className="h-4 w-4 flex-shrink-0" />
-                <span>+977-XXXXXXXXXX</span>
+                <span>{t.phone}</span>
               </li>
               <li className="flex items-center gap-2 text-muted-foreground">
                 <Mail className="h-4 w-4 flex-shrink-0" />
-                <span>info@nepalecom.com</span>
+                <span>{t.email}</span>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>© 2025 NepalEcom. सर्वाधिकार सुरक्षित।</p>
+          <p>© 2025 NepalEcom. {t.rights}</p>
           <div className="flex justify-center gap-4 mt-4 flex-wrap">
-            <span className="font-semibold">भुक्तानी विकल्पहरू:</span>
+            <span className="font-semibold">{t.paymentOptions}</span>
             <span>eSewa</span>
             <span>Khalti</span>
             <span>IMEPay</span>
-            <span>बैंक स्थानान्तरण</span>
+            <span>{t.bankTransfer}</span>
           </div>
         </div>
       </div>

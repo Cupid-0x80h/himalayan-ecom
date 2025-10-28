@@ -2,6 +2,8 @@ import { ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
   id: string;
@@ -15,6 +17,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({
+  id,
   title,
   price,
   comparePrice,
@@ -23,12 +26,27 @@ export const ProductCard = ({
   reviews,
   inStock,
 }: ProductCardProps) => {
+  const { language } = useLanguage();
+  const navigate = useNavigate();
   const discount = comparePrice
     ? Math.round(((comparePrice - price) / comparePrice) * 100)
     : 0;
+  
+  const formatPrice = (price: number) => {
+    return language === 'en' 
+      ? `NPR ${price.toLocaleString('en-NP')}`
+      : `रू ${price.toLocaleString('ne-NP')}`;
+  };
+  
+  const discountText = language === 'en' ? 'OFF' : 'छुट';
+  const outOfStockText = language === 'en' ? 'Out of Stock' : 'स्टकमा छैन';
+  const addToCartText = language === 'en' ? 'Add to Cart' : 'कार्टमा थप्नुहोस्';
 
   return (
-    <Card className="group overflow-hidden transition-all hover:shadow-lg hover:scale-[1.02] duration-300">
+    <Card 
+      className="group overflow-hidden transition-all hover:shadow-lg hover:scale-[1.02] duration-300 cursor-pointer"
+      onClick={() => navigate(`/product/${id}`)}
+    >
       <div className="relative aspect-square overflow-hidden bg-muted">
         <img
           src={image}
@@ -37,12 +55,12 @@ export const ProductCard = ({
         />
         {discount > 0 && (
           <Badge className="absolute top-2 left-2 bg-secondary text-secondary-foreground">
-            {discount}% छुट
+            {discount}% {discountText}
           </Badge>
         )}
         {!inStock && (
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-            <Badge variant="destructive">स्टकमा छैन</Badge>
+            <Badge variant="destructive">{outOfStockText}</Badge>
           </div>
         )}
       </div>
@@ -70,11 +88,11 @@ export const ProductCard = ({
 
         <div className="flex items-baseline gap-2">
           <span className="text-lg font-bold text-primary">
-            रू {price.toLocaleString("ne-NP")}
+            {formatPrice(price)}
           </span>
           {comparePrice && (
             <span className="text-sm text-muted-foreground line-through">
-              रू {comparePrice.toLocaleString("ne-NP")}
+              {formatPrice(comparePrice)}
             </span>
           )}
         </div>
@@ -85,9 +103,13 @@ export const ProductCard = ({
           className="w-full gap-2"
           variant={inStock ? "default" : "outline"}
           disabled={!inStock}
+          onClick={(e) => {
+            e.stopPropagation();
+            // Add to cart logic here
+          }}
         >
           <ShoppingCart className="h-4 w-4" />
-          कार्टमा थप्नुहोस्
+          {addToCartText}
         </Button>
       </CardFooter>
     </Card>
