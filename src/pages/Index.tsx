@@ -13,6 +13,7 @@ const Index = () => {
   const featuredProducts = [
     {
       id: "1",
+      slug: "nepali-handmade-scarf",
       title: "नेपाली हस्तनिर्मित ऊनी स्कार्फ",
       price: 1200,
       comparePrice: 1500,
@@ -23,6 +24,7 @@ const Index = () => {
     },
     {
       id: "2",
+      slug: "solar-power-bank",
       title: "सोलार पावर बैंक 10,000mAh",
       price: 2500,
       comparePrice: 3200,
@@ -33,6 +35,7 @@ const Index = () => {
     },
     {
       id: "3",
+      slug: "stainless-steel-bottle",
       title: "स्टेनलेस स्टील वाटर बोतल",
       price: 850,
       image: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500&h=500&fit=crop",
@@ -42,6 +45,7 @@ const Index = () => {
     },
     {
       id: "4",
+      slug: "wireless-bluetooth-headphones",
       title: "ब्लुटुथ वायरलेस हेडफोन",
       price: 3200,
       comparePrice: 4500,
@@ -52,6 +56,7 @@ const Index = () => {
     },
     {
       id: "5",
+      slug: "premium-yoga-mat",
       title: "योग म्याट प्रिमियम गुणस्तर",
       price: 1800,
       image: "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=500&h=500&fit=crop",
@@ -61,6 +66,7 @@ const Index = () => {
     },
     {
       id: "6",
+      slug: "kitchen-knife-set",
       title: "किचन नाइफ सेट (५ पिस)",
       price: 2200,
       comparePrice: 2800,
@@ -107,11 +113,11 @@ const Index = () => {
                 {t('heroSubtitle')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="gap-2 text-base">
+                <Button size="lg" className="gap-2 text-base" onClick={() => window.location.href = '/products'}>
                   {t('shopNow')}
                   <ArrowRight className="h-5 w-5" />
                 </Button>
-                <Button size="lg" variant="outline" className="text-base">
+                <Button size="lg" variant="outline" className="text-base" onClick={() => window.location.href = '/products?deals=true'}>
                   {t('viewDeals')}
                 </Button>
               </div>

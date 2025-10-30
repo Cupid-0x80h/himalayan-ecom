@@ -4,9 +4,13 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   id: string;
+  slug: string;
   title: string;
   price: number;
   comparePrice?: number;
@@ -18,6 +22,7 @@ interface ProductCardProps {
 
 export const ProductCard = ({
   id,
+  slug,
   title,
   price,
   comparePrice,
@@ -27,6 +32,7 @@ export const ProductCard = ({
   inStock,
 }: ProductCardProps) => {
   const { language } = useLanguage();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const discount = comparePrice
     ? Math.round(((comparePrice - price) / comparePrice) * 100)
@@ -42,10 +48,50 @@ export const ProductCard = ({
   const outOfStockText = language === 'en' ? 'Out of Stock' : 'स्टकमा छैन';
   const addToCartText = language === 'en' ? 'Add to Cart' : 'कार्टमा थप्नुहोस्';
 
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!user) {
+      navigate('/auth');
+      toast.error(language === 'en' ? 'Please login to add items to cart' : 'कार्टमा वस्तुहरू थप्न कृपया लगइन गर्नुहोस्');
+      return;
+    }
+
+    const { data: existingItem } = await supabase
+      .from('cart')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('product_id', id)
+      .single();
+
+    if (existingItem) {
+      const { error } = await supabase
+        .from('cart')
+        .update({ quantity: existingItem.quantity + 1 })
+        .eq('id', existingItem.id);
+
+      if (!error) {
+        toast.success(language === 'en' ? 'Added to cart' : 'कार्टमा थपियो');
+      }
+    } else {
+      const { error } = await supabase
+        .from('cart')
+        .insert({
+          user_id: user.id,
+          product_id: id,
+          quantity: 1
+        });
+
+      if (!error) {
+        toast.success(language === 'en' ? 'Added to cart' : 'कार्टमा थपियो');
+      }
+    }
+  };
+
   return (
     <Card 
       className="group overflow-hidden transition-all hover:shadow-lg hover:scale-[1.02] duration-300 cursor-pointer"
-      onClick={() => navigate(`/product/${id}`)}
+      onClick={() => navigate(`/product/${slug}`)}
     >
       <div className="relative aspect-square overflow-hidden bg-muted">
         <img
@@ -103,10 +149,7 @@ export const ProductCard = ({
           className="w-full gap-2"
           variant={inStock ? "default" : "outline"}
           disabled={!inStock}
-          onClick={(e) => {
-            e.stopPropagation();
-            // Add to cart logic here
-          }}
+          onClick={handleAddToCart}
         >
           <ShoppingCart className="h-4 w-4" />
           {addToCartText}

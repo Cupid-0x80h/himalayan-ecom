@@ -6,9 +6,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Admin = () => {
@@ -17,6 +20,21 @@ const Admin = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    title_en: '',
+    title_ne: '',
+    description_en: '',
+    description_ne: '',
+    price: '',
+    compare_price: '',
+    stock: '',
+    category_id: '',
+    slug: '',
+    sku: '',
+    images: ''
+  });
 
   useEffect(() => {
     if (!authLoading && !isAdmin) {
@@ -29,8 +47,17 @@ const Admin = () => {
     if (isAdmin) {
       fetchProducts();
       fetchOrders();
+      fetchCategories();
     }
   }, [isAdmin]);
+
+  const fetchCategories = async () => {
+    const { data } = await supabase
+      .from('categories')
+      .select('*')
+      .order('name_en', { ascending: true });
+    if (data) setCategories(data);
+  };
 
   const fetchProducts = async () => {
     const { data } = await supabase
@@ -72,6 +99,47 @@ const Admin = () => {
     }
   };
 
+  const handleAddProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const { error } = await supabase
+      .from('products')
+      .insert({
+        title_en: newProduct.title_en,
+        title_ne: newProduct.title_ne,
+        description_en: newProduct.description_en,
+        description_ne: newProduct.description_ne,
+        price: parseFloat(newProduct.price),
+        compare_price: newProduct.compare_price ? parseFloat(newProduct.compare_price) : null,
+        stock: parseInt(newProduct.stock),
+        category_id: newProduct.category_id,
+        slug: newProduct.slug,
+        sku: newProduct.sku,
+        images: newProduct.images ? [newProduct.images] : []
+      });
+
+    if (!error) {
+      toast.success('Product added successfully');
+      setShowAddForm(false);
+      setNewProduct({
+        title_en: '',
+        title_ne: '',
+        description_en: '',
+        description_ne: '',
+        price: '',
+        compare_price: '',
+        stock: '',
+        category_id: '',
+        slug: '',
+        sku: '',
+        images: ''
+      });
+      fetchProducts();
+    } else {
+      toast.error('Failed to add product');
+    }
+  };
+
   if (authLoading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
@@ -94,6 +162,101 @@ const Admin = () => {
           </TabsList>
 
           <TabsContent value="products" className="mt-6">
+            <div className="mb-4">
+              <Button onClick={() => setShowAddForm(!showAddForm)}>
+                <Plus className="w-4 h-4 mr-2" />
+                {showAddForm ? 'Cancel' : 'Add New Product'}
+              </Button>
+            </div>
+
+            {showAddForm && (
+              <form onSubmit={handleAddProduct} className="mb-6 p-6 border rounded-lg space-y-4">
+                <h3 className="text-xl font-semibold mb-4">Add New Product</h3>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    placeholder="Title (English)"
+                    value={newProduct.title_en}
+                    onChange={(e) => setNewProduct({...newProduct, title_en: e.target.value})}
+                    required
+                  />
+                  <Input
+                    placeholder="Title (Nepali)"
+                    value={newProduct.title_ne}
+                    onChange={(e) => setNewProduct({...newProduct, title_ne: e.target.value})}
+                    required
+                  />
+                  <Textarea
+                    placeholder="Description (English)"
+                    value={newProduct.description_en}
+                    onChange={(e) => setNewProduct({...newProduct, description_en: e.target.value})}
+                    required
+                  />
+                  <Textarea
+                    placeholder="Description (Nepali)"
+                    value={newProduct.description_ne}
+                    onChange={(e) => setNewProduct({...newProduct, description_ne: e.target.value})}
+                    required
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Price"
+                    value={newProduct.price}
+                    onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+                    required
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Compare Price (optional)"
+                    value={newProduct.compare_price}
+                    onChange={(e) => setNewProduct({...newProduct, compare_price: e.target.value})}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Stock"
+                    value={newProduct.stock}
+                    onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
+                    required
+                  />
+                  <Select
+                    value={newProduct.category_id}
+                    onValueChange={(value) => setNewProduct({...newProduct, category_id: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {cat.name_en}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    placeholder="Slug (e.g., product-name)"
+                    value={newProduct.slug}
+                    onChange={(e) => setNewProduct({...newProduct, slug: e.target.value})}
+                    required
+                  />
+                  <Input
+                    placeholder="SKU"
+                    value={newProduct.sku}
+                    onChange={(e) => setNewProduct({...newProduct, sku: e.target.value})}
+                    required
+                  />
+                  <Input
+                    placeholder="Image URL"
+                    value={newProduct.images}
+                    onChange={(e) => setNewProduct({...newProduct, images: e.target.value})}
+                    className="col-span-2"
+                  />
+                </div>
+                
+                <Button type="submit">Add Product</Button>
+              </form>
+            )}
+
             <Table>
               <TableHeader>
                 <TableRow>

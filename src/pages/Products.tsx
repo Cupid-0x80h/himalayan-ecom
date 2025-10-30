@@ -64,6 +64,7 @@ const Products = () => {
               <ProductCard
                 key={product.id}
                 id={product.id}
+                slug={product.slug}
                 title={language === 'en' ? product.title_en : product.title_ne}
                 price={product.price}
                 comparePrice={product.compare_price}
