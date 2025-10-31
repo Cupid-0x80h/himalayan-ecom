@@ -22,6 +22,7 @@ const Admin = () => {
   const [orders, setOrders] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
   const [newProduct, setNewProduct] = useState({
     title_en: '',
     title_ne: '',
@@ -140,6 +141,84 @@ const Admin = () => {
     }
   };
 
+  const handleEditProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+
+    const { error } = await supabase
+      .from('products')
+      .update({
+        title_en: newProduct.title_en,
+        title_ne: newProduct.title_ne,
+        description_en: newProduct.description_en,
+        description_ne: newProduct.description_ne,
+        price: parseFloat(newProduct.price),
+        compare_price: newProduct.compare_price ? parseFloat(newProduct.compare_price) : null,
+        stock: parseInt(newProduct.stock),
+        category_id: newProduct.category_id,
+        slug: newProduct.slug,
+        sku: newProduct.sku,
+        images: newProduct.images ? [newProduct.images] : []
+      })
+      .eq('id', editingProduct.id);
+
+    if (!error) {
+      toast.success('Product updated successfully');
+      setEditingProduct(null);
+      setNewProduct({
+        title_en: '',
+        title_ne: '',
+        description_en: '',
+        description_ne: '',
+        price: '',
+        compare_price: '',
+        stock: '',
+        category_id: '',
+        slug: '',
+        sku: '',
+        images: ''
+      });
+      fetchProducts();
+    } else {
+      toast.error('Failed to update product');
+    }
+  };
+
+  const startEditProduct = (product: any) => {
+    setEditingProduct(product);
+    setNewProduct({
+      title_en: product.title_en,
+      title_ne: product.title_ne,
+      description_en: product.description_en || '',
+      description_ne: product.description_ne || '',
+      price: product.price.toString(),
+      compare_price: product.compare_price?.toString() || '',
+      stock: product.stock.toString(),
+      category_id: product.category_id,
+      slug: product.slug,
+      sku: product.sku || '',
+      images: product.images?.[0] || ''
+    });
+    setShowAddForm(false);
+  };
+
+  const cancelEdit = () => {
+    setEditingProduct(null);
+    setNewProduct({
+      title_en: '',
+      title_ne: '',
+      description_en: '',
+      description_ne: '',
+      price: '',
+      compare_price: '',
+      stock: '',
+      category_id: '',
+      slug: '',
+      sku: '',
+      images: ''
+    });
+  };
+
   if (authLoading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
@@ -162,12 +241,108 @@ const Admin = () => {
           </TabsList>
 
           <TabsContent value="products" className="mt-6">
-            <div className="mb-4">
-              <Button onClick={() => setShowAddForm(!showAddForm)}>
+            <div className="mb-4 flex gap-2">
+              <Button onClick={() => {
+                setShowAddForm(!showAddForm);
+                if (editingProduct) cancelEdit();
+              }}>
                 <Plus className="w-4 h-4 mr-2" />
                 {showAddForm ? 'Cancel' : 'Add New Product'}
               </Button>
+              {editingProduct && (
+                <Button variant="outline" onClick={cancelEdit}>
+                  Cancel Edit
+                </Button>
+              )}
             </div>
+
+            {editingProduct && (
+              <form onSubmit={handleEditProduct} className="mb-6 p-6 border rounded-lg space-y-4">
+                <h3 className="text-xl font-semibold mb-4">Edit Product</h3>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    placeholder="Title (English)"
+                    value={newProduct.title_en}
+                    onChange={(e) => setNewProduct({...newProduct, title_en: e.target.value})}
+                    required
+                  />
+                  <Input
+                    placeholder="Title (Nepali)"
+                    value={newProduct.title_ne}
+                    onChange={(e) => setNewProduct({...newProduct, title_ne: e.target.value})}
+                    required
+                  />
+                  <Textarea
+                    placeholder="Description (English)"
+                    value={newProduct.description_en}
+                    onChange={(e) => setNewProduct({...newProduct, description_en: e.target.value})}
+                    required
+                  />
+                  <Textarea
+                    placeholder="Description (Nepali)"
+                    value={newProduct.description_ne}
+                    onChange={(e) => setNewProduct({...newProduct, description_ne: e.target.value})}
+                    required
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Price"
+                    value={newProduct.price}
+                    onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
+                    required
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Compare Price (optional)"
+                    value={newProduct.compare_price}
+                    onChange={(e) => setNewProduct({...newProduct, compare_price: e.target.value})}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Stock"
+                    value={newProduct.stock}
+                    onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
+                    required
+                  />
+                  <Select
+                    value={newProduct.category_id}
+                    onValueChange={(value) => setNewProduct({...newProduct, category_id: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {cat.name_en}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    placeholder="Slug (e.g., product-name)"
+                    value={newProduct.slug}
+                    onChange={(e) => setNewProduct({...newProduct, slug: e.target.value})}
+                    required
+                  />
+                  <Input
+                    placeholder="SKU"
+                    value={newProduct.sku}
+                    onChange={(e) => setNewProduct({...newProduct, sku: e.target.value})}
+                    required
+                  />
+                  <Input
+                    placeholder="Image URL"
+                    value={newProduct.images}
+                    onChange={(e) => setNewProduct({...newProduct, images: e.target.value})}
+                    className="col-span-2"
+                  />
+                </div>
+                
+                <Button type="submit">Update Product</Button>
+              </form>
+            )}
 
             {showAddForm && (
               <form onSubmit={handleAddProduct} className="mb-6 p-6 border rounded-lg space-y-4">
@@ -276,7 +451,11 @@ const Admin = () => {
                     <TableCell>{product.categories?.name_en}</TableCell>
                     <TableCell>
                       <div className="flex gap-2">
-                        <Button size="sm" variant="ghost">
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          onClick={() => startEditProduct(product)}
+                        >
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button
