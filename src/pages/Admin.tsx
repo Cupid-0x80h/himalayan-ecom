@@ -11,12 +11,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Edit, Trash2, Plus } from 'lucide-react';
+import { Edit, Trash2, Plus, LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Admin = () => {
-  const { user, isAdmin, loading: authLoading } = useAuth();
-  const { t } = useLanguage();
+  const { user, isAdmin, loading: authLoading, signOut } = useAuth();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const [products, setProducts] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
@@ -217,6 +217,12 @@ const Admin = () => {
       sku: '',
       images: ''
     });
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    toast.success(language === 'en' ? 'Logged out successfully' : 'सफलतापूर्वक लग आउट भयो');
+    navigate('/');
   };
 
   if (authLoading) {
@@ -514,6 +520,19 @@ const Admin = () => {
             </Table>
           </TabsContent>
         </Tabs>
+
+        {/* Logout Button */}
+        <div className="flex justify-center pt-8 mt-8 border-t">
+          <Button 
+            variant="destructive" 
+            size="lg"
+            onClick={handleLogout}
+            className="gap-2"
+          >
+            <LogOut className="h-5 w-5" />
+            {language === 'en' ? 'Logout' : 'लग आउट'}
+          </Button>
+        </div>
       </main>
 
       <Footer />

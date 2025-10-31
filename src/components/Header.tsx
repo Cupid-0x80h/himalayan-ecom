@@ -1,21 +1,20 @@
-import { ShoppingCart, Search, User, Menu, Globe, LogOut } from "lucide-react";
+import { ShoppingCart, Search, User, Menu, Globe, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Header = () => {
   const { language, toggleLanguage, t } = useLanguage();
-  const { user, signOut } = useAuth();
+  const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    await signOut();
-    toast.success(language === 'en' ? 'Logged out successfully' : 'सफलतापूर्वक लग आउट भयो');
-    navigate('/');
-  };
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
       <div className="container flex h-16 items-center justify-between px-4">
@@ -57,14 +56,18 @@ export const Header = () => {
             <Globe className="h-5 w-5" />
           </Button>
           {user ? (
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={handleLogout}
-              title={language === 'en' ? 'Logout' : 'लग आउट'}
-            >
-              <LogOut className="h-5 w-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate(isAdmin ? '/admin' : '/dashboard')}>
+                  {isAdmin ? (language === 'en' ? 'Admin Dashboard' : 'एडमिन ड्यासबोर्ड') : (language === 'en' ? 'My Dashboard' : 'मेरो ड्यासबोर्ड')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Button 
               variant="ghost" 
