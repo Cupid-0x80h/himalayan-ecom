@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -14,6 +15,7 @@ import {
 export const Header = () => {
   const { language, toggleLanguage, t } = useLanguage();
   const { user, isAdmin } = useAuth();
+  const { cartCount } = useCart();
   const navigate = useNavigate();
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -84,9 +86,11 @@ export const Header = () => {
             onClick={() => navigate('/cart')}
           >
             <ShoppingCart className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-secondary text-[10px] font-bold text-secondary-foreground flex items-center justify-center">
-              0
-            </span>
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-secondary text-[10px] font-bold text-secondary-foreground flex items-center justify-center">
+                {cartCount > 3 ? '3+' : cartCount}
+              </span>
+            )}
           </Button>
         </div>
       </div>

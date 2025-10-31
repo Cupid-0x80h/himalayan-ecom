@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -33,6 +34,7 @@ export const ProductCard = ({
 }: ProductCardProps) => {
   const { language } = useLanguage();
   const { user } = useAuth();
+  const { refreshCart } = useCart();
   const navigate = useNavigate();
   const discount = comparePrice
     ? Math.round(((comparePrice - price) / comparePrice) * 100)
@@ -62,7 +64,7 @@ export const ProductCard = ({
       .select('*')
       .eq('user_id', user.id)
       .eq('product_id', id)
-      .single();
+      .maybeSingle();
 
     if (existingItem) {
       const { error } = await supabase
@@ -72,6 +74,7 @@ export const ProductCard = ({
 
       if (!error) {
         toast.success(language === 'en' ? 'Added to cart' : 'कार्टमा थपियो');
+        refreshCart();
       }
     } else {
       const { error } = await supabase
@@ -84,6 +87,7 @@ export const ProductCard = ({
 
       if (!error) {
         toast.success(language === 'en' ? 'Added to cart' : 'कार्टमा थपियो');
+        refreshCart();
       }
     }
   };
