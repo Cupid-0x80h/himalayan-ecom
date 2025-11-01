@@ -52,6 +52,30 @@ const Admin = () => {
     }
   }, [isAdmin]);
 
+  // Real-time subscription for orders
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const channel = supabase
+      .channel('admin-orders')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'orders'
+        },
+        () => {
+          fetchOrders();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [isAdmin]);
+
   const fetchCategories = async () => {
     const { data } = await supabase
       .from('categories')

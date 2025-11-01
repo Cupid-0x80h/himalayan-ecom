@@ -32,6 +32,31 @@ const UserDashboard = () => {
     }
   }, [user]);
 
+  // Real-time subscription for orders
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('user-orders')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'orders',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          fetchUserData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
   const fetchUserData = async () => {
     setLoading(true);
     
