@@ -93,10 +93,19 @@ const Admin = () => {
   };
 
   const fetchOrders = async () => {
-    const { data } = await supabase
+    console.log('Fetching orders as admin...');
+    
+    const { data, error } = await supabase
       .from('orders')
       .select('*, profiles(name)')
       .order('created_at', { ascending: false });
+    
+    console.log('Orders fetch result:', { data, error, count: data?.length });
+    
+    if (error) {
+      console.error('Error fetching orders:', error);
+    }
+    
     if (data) setOrders(data);
   };
 
