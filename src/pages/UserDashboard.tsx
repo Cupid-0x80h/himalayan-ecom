@@ -87,6 +87,20 @@ const UserDashboard = () => {
     navigate('/');
   };
 
+  const handleCancelOrder = async (orderId: string) => {
+    const { error } = await supabase
+      .from('orders')
+      .update({ order_status: 'cancelled' })
+      .eq('id', orderId);
+
+    if (error) {
+      toast.error(language === 'en' ? 'Failed to cancel order' : 'अर्डर रद्द गर्न असफल');
+    } else {
+      toast.success(language === 'en' ? 'Order cancelled successfully' : 'अर्डर सफलतापूर्वक रद्द भयो');
+      fetchUserData();
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed':
@@ -152,13 +166,14 @@ const UserDashboard = () => {
                   {language === 'en' ? 'No orders yet' : 'अहिलेसम्म कुनै अर्डर छैन'}
                 </p>
               ) : (
-                <Table>
+                  <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead>{language === 'en' ? 'Order ID' : 'अर्डर आईडी'}</TableHead>
                       <TableHead>{language === 'en' ? 'Date' : 'मिति'}</TableHead>
                       <TableHead>{language === 'en' ? 'Total' : 'जम्मा'}</TableHead>
                       <TableHead>{language === 'en' ? 'Status' : 'स्थिति'}</TableHead>
+                      <TableHead>{language === 'en' ? 'Actions' : 'कार्यहरू'}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -175,6 +190,17 @@ const UserDashboard = () => {
                           <Badge className={getStatusColor(order.order_status)}>
                             {order.order_status}
                           </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {order.order_status === 'pending' && (
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleCancelOrder(order.id)}
+                            >
+                              {language === 'en' ? 'Cancel' : 'रद्द गर्नुहोस्'}
+                            </Button>
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
